@@ -59,10 +59,27 @@ export default function DonateBooks() {
     reset,
   } = useForm<FormValues>({ resolver: zodResolver(schema), defaultValues: defaults });
 
-  const onSubmit = (values: FormValues) => {
+const onSubmit = async (values: FormValues) => {
+  try {
+    await fetch("https://script.google.com/macros/s/AKfycbwVORFNmBnzLEycZxz98gy1-Q1NV4waeo3c74_NEfp8ft1PtphM8VZ9a4D5yZOHju8R/exec", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        ...values,
+        bookTypes: values.bookTypes.join(", "),
+        date: new Date().toISOString(),
+      }),
+    });
+
     toast.success("Donation pledge received! 🎉");
     setSubmitted(values);
-  };
+
+  } catch (error) {
+    toast.error("Submission failed. Please try again.");
+  }
+};
 
   const shareOnWhatsApp = () => {
     const url = typeof window !== "undefined" ? window.location.origin : "";
